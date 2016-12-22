@@ -1,0 +1,257 @@
+{% extends 'app/base.html' %}
+{%load staticfiles%}
+{% block block1 %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+<style>
+        input[type=search] {
+            background: none;
+            font-weight: bold;
+            border-color: #2e2e2e;
+            border-style: solid;
+            border-width: 2px 2px 2px 2px;
+            outline: none;
+            padding: 10px 20px 10px 20px;
+            width: 250px;
+        }
+      /*Css to target the dropdownbox*/
+        ul.ui-autocomplete {
+            color: red !important;
+            -moz-border-radius: 15px;
+            border-radius: 15px;
+        }
+    </style>
+<div class="row" style="background-color:transparent;margin-left:0px;margin-right:0px;">
+	<div class="col-lg-3">
+	</div>
+	<div class="col-lg-6">
+		<div class="text-center">
+			{% if 'primaryadmin' in request.session %}
+			<div style="background:#ffffff;padding:5px;color:#000000;">
+				<h3 class ="text-center"> Update Waste</h3>
+				<hr>
+				<form id="myform" class = "form-horizontal" method = "post"  >
+					{% csrf_token %}
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3" >Establishment</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" type= "search" id="name" placeholder="" name = "name"  autofocus>
+					        </div>
+					    </div>
+						
+					</div>
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3">Bag 1</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" id="bag_1" placeholder="" name = "bag_1"  >
+					        </div>
+					    </div>
+						
+					</div>
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3">Bag 2</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" id="bag_2" placeholder="" name = "bag_2">
+					        </div>
+					    </div>
+						
+					</div>
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3">Bag 3</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" id="bag_3" placeholder="" name = "bag_3">
+					        </div>
+					    </div>
+						
+					</div>
+					<div class="form-group text-center">
+				        <button type="submit" style="background-color:#10452f;" class="btn btn-success">Submit</button>
+				    </div>
+				</form>
+			</div>
+			
+			<a  href="/app/update/" class="btn btn-danger">See Updated </a>
+			<div style="background:#ffffff;padding:5px;color:#000000;margin-top:20px;">
+			<h3 class ="text-center"> Pending Approvals</h3>
+			<hr>
+				{% if pending_user %}
+				<table class="table">
+				<thead>
+				<tr>
+				<th>Email</th>
+				<th>Establishment Name</th>
+				<th>Category</th>
+				<th>Ownership</th>
+				</tr>
+				 </thead>
+				{% for i in pending_user %}
+				
+				
+				<tr>
+				<td><a style="color:blue" href="/app/user/{{ i.id }}/">{{ i.email }}</a></td>
+				<td>{{i.name}}</td>
+				<td>{{i.category}}</td>
+				<td>{{i.ownership}}</td>
+				</tr>
+				
+				{% endfor %}
+				</table>
+				{% else %}
+				<h5 > No pending approvals</h5><br><br>
+				{% endif %}
+			<h3 class ="text-center"> Approved Users</h3>
+			<hr>
+				{% if approved_user %}
+				<table class="table">
+				<thead>
+				<tr>
+				<th>Email</th>
+				<th>Establishment Name</th>
+				<th>Category</th>
+				<th>Ownership</th>
+				</tr>
+				 </thead>
+				{% for i in approved_user %}
+				<tr>
+				<td><a style="color:blue" href="/app/user/{{ i.id }}/">{{ i.email }}</a></td>
+				<td>{{i.name}}</td>
+				<td>{{i.category}}</td>
+				<td>{{i.ownership}}</td>
+				</tr>
+				{% endfor %}
+				{% else %}
+				<h5 > No Approved User</h5>
+				{% endif %}
+				</table>
+			</div>
+			{% elif 'secondaryadmin' in request.session %}
+			<div style="background:#ffffff;padding:5px;color:#000000;">
+				<h3 class ="text-center"> Update Waste</h3>
+				<hr>
+				<form id="myform" class = "form-horizontal" method = "post"  >
+					{% csrf_token %}
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3" >Establishment</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" id="name" placeholder="" name = "name"  autofocus>
+					        </div>
+					    </div>
+						
+					</div>
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3">Bag 1</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" id="bag_1" placeholder="" name = "bag_1"  >
+					        </div>
+					    </div>
+						
+					</div>
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3">Bag 2</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" id="bag_2" placeholder="" name = "bag_2">
+					        </div>
+					    </div>
+						
+					</div>
+					<div class = "form-group">
+						<div class="col-sm-12">
+						<label class="control-label col-sm-3">Bag 3</label>
+							<div class="col-sm-9"> 
+					        <input type="text" class="form-control" id="bag_3" placeholder="" name = "bag_3">
+					        </div>
+					    </div>
+						
+					</div>
+					<div class="form-group text-center">
+				        <button type="submit" style="background-color:#10452f;" class="btn btn-success">Submit</button>
+				    </div>
+				</form>
+			</div>
+				<a  href="/app/update/" class="btn btn-danger">See Updated </a>
+			<div style="background:#ffffff;padding:5px;color:#000000;margin-top:20px;">
+			<h3 class ="text-center"> Pending Approvals</h3>
+			<hr>
+				{% if pending_user %}
+				<table class="table">
+				<thead>
+				<tr>
+				<th>Email</th>
+				<th>Establishment Name</th>
+				<th>Category</th>
+				<th>Ownership</th>
+				</tr>
+				 </thead>
+				{% for i in pending_user %}
+				
+				
+				<tr>
+				<td><a style="color:blue" href="/app/user/{{ i.id }}/">{{ i.email }}</a></td>
+				<td>{{i.name}}</td>
+				<td>{{i.category}}</td>
+				<td>{{i.ownership}}</td>
+				</tr>
+				
+				{% endfor %}
+				</table>
+				{% else %}
+				<h5 > No pending approvals</h5>
+				{% endif %}
+			</div>
+			{% elif 'user' in request.session %}
+			<h2>hello</h2>
+
+
+
+
+
+
+
+
+
+			{% else %}
+			<div class="text-center">
+				<h3 style="color: #fed136;">Welcome to Bhopal Incinerators</h3>
+				<img src="/static/app/img/logo.jpg" style="width:30%;height:30%;"><br><br>
+				<p style="background:black;">BHOPAL INCINERATORS LIMITED IS A “COMMON BIO-MEDICAL WASTE TREATMENT FACILITY” IN BHOPAL.</p>
+			</div>
+
+			<!-- <img src="/static/app/img/home_page.png" height="420" width="700"></img> -->
+			</div>
+		</div>
+</div>
+{% endif %}
+<script src="{% static 'app/js/jquery.min.js' %}"></script>
+<script type='text/javascript'>
+        $(document).ready(function(){
+            $('#myform input').keydown(function(e){
+             if(e.keyCode==13){       
+
+                if($(':input:eq(' + ($(':input').index(this) + 1) + ')').attr('type')=='submit'){// check for submit button and submit form on enter press
+                 return true;
+                }
+
+                $(':input:eq(' + ($(':input').index(this) + 1) + ')').focus();
+
+               return false;
+             }
+
+            });
+        });
+        </script>
+  <script src="{% static 'app/js/jquery-ui.js' %}"></script>
+<script>
+$(document).ready(function () {
+    $("#name").autocomplete({
+        source: "/app/search/",
+    });
+});
+</script>
+
+{% endblock %}

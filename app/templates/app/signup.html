@@ -1,0 +1,365 @@
+{% extends 'app/base.html' %}
+{%load staticfiles%}
+{% block block1 %}
+<div class="row" style="background-color: white ; color:black">
+<div class="col-lg-3">
+</div>
+<div class="col-lg-6">
+{% ifequal done 3 %}
+<h1 class="text-center">Establishment Name Already Registered</h1>
+{% endifequal %}
+{% ifequal done 2 %}
+<h1 class="text-center">Email Already Registered</h1>
+{% endifequal %}
+{% ifequal done 1 %}
+<h1 class="text-center">Mail has been sent</h1>
+{% endifequal %}
+{% ifequal done 0 %}
+<h1 class="text-center">Sign Up</h1>
+<hr>
+<div class="text-left">
+
+
+<form name="myForm" class = "form-horizontal" method = "post" action = "/app/signup/" onsubmit="return validateForm()">
+				{% csrf_token %}
+				<div class = "form-group">
+					<div class="col-sm-12">
+					<label class="control-label col-sm-2">Email ID </label>
+						<div class="col-sm-10"> 
+				        <input type="text" class="form-control" id="email" placeholder="example@mail.com" name = "email" required>
+				        </div>
+				    </div>
+					
+				</div>
+
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Category </label>
+							<div class="col-sm-10"> 
+					        <select class="form-control" name = "category" id="category">
+					        <option value="Hospital">Hospital</option>
+					        <option value="Blood Bank">Blood Bank</option>
+					        <option value= "Dental Clinic">Dental Clinic</option>
+					        <option value="Pathology Lab">Pathology Lab</option>
+					        <option value="Pathology Lab with Histopathology">Pathology Lab with Histopathology</option>
+					        <option value="Clinic">Clinic</option>
+					        <option value="Dispensary">Dispensary</option>
+					        <option value="Veterinary Hospital">Veterinary Hospital</option>
+					        <option value="Veterinary Clinic">Veterinary Clinic</option>
+					        <option value="Other">Other</option>
+					        </select>
+					        </div>
+					</div>
+				</div>
+				<div id="others_cat">
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Specify Category </label>
+						<div class="col-sm-10"> 
+							<input type="text" class="form-control" id="specify_cat" placeholder="" name = "specify_cat">
+					    </div>
+					   </div>
+				</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Ownership </label>
+							<div class="col-sm-10"> 
+					        <select class="form-control" name = "ownership" id="ownership">
+					        <option value="Governments">Government(Centre/State)</option>
+					        <option value="Semi Government">Semi Government</option>
+					        <option value= "Corporate– Public">Corporate– Public</option>
+					        <option value="Corporate– Private">Corporate– Private</option>
+					        <option value="Partnership">Partnership</option>
+					        <option value="Individual Owned">Individual Owned</option>
+					        <option value="Other">Other</option>
+					        </select>
+					        </div>
+					</div>
+				</div>
+				<div id="others_own">
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Specify Ownership </label>
+						<div class="col-sm-10"> 
+							<input type="text" class="form-control" id="specify_own" placeholder="" name = "specify_own">
+					    </div>
+					   </div>
+				</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+					<label class="control-label col-sm-2">Establishment Name </label>
+						<div class="col-sm-10"> 
+				        <input type="text" class="form-control" id="establishment_name" placeholder="" name = "establishment_name" required>
+				        </div>
+				    </div>
+					
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Date of Starting Establishment</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="demo" placeholder="date" name = "demo" required>
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<h4 class="text-center">Authorised Person</h4>
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Name </label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="auth_name" placeholder="" name = "auth_name" required>
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Designation </label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="auth_designation" placeholder="" name = "auth_designation">
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Contact No. </label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="auth_contact" placeholder="" name = "auth_contact" pattern="^\d{10}$"  required >
+					        </div>
+					</div>
+				</div>
+				
+				<div class = "form-group">
+				<h4 class="text-center">No. of Beds</h4>
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">ICU / CCU / PICU </label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="beds_icu" placeholder="0" name = "beds_icu">
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Others </label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="beds_other" placeholder="0" name = "beds_other">
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">OT </label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="beds_ot" placeholder="0" name = "beds_ot">
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Complete Address </label>
+							<div class="col-sm-10"> 
+					        <textarea type="text" class="form-control" rows="5" id="address" placeholder="Address" name = "address" ></textarea>
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+				<h4 class="text-center">Authorised person ( Responsible to give Bio-Waste )</h4>
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Name 1</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="bio_auth_name1" placeholder="" name = "bio_auth_name1" required>
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Mob No.1 </label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="bio_auth_mob1" placeholder="" name = "bio_auth_mob1" pattern="^\d{10}$" required >
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Name 2</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="bio_auth_name2" placeholder="" name = "bio_auth_name2" required >
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Mob No.2</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="bio_auth_mob2" placeholder="" name = "bio_auth_mob2" pattern="^\d{10}$" required >
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+				<h4 class="text-center">Supervisor ( For reporting irregularity )</h4>
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Name 1</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="sup_name1" placeholder="" name = "sup_name1" required>
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Mob No.1</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="sup_mob1" placeholder="" name = "sup_mob1" pattern="^\d{10}$" required  >
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+				
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Name 2</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="sup_name2" placeholder="" name = "sup_name2" required >
+					        </div>
+					</div>
+				</div>
+				<div class = "form-group">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-2">Mob No.2</label>
+							<div class="col-sm-10"> 
+					        <input type="text" class="form-control" id="sup_mob2" placeholder="" name = "sup_mob2" pattern="^\d{10}$" required >
+					        </div>
+					</div>
+				</div>
+				<div class="form-group text-center">
+			        <button type="submit" style="background-color:#10452f;" class="btn btn-success">Submit</button>
+			    </div>
+			</form>
+			</div>
+
+			</div>
+</div>
+{% endifequal %}
+<script src="{% static 'app/js/jquery.min.js' %}"></script>
+<script>
+	$(document).ready(function() {
+	$('#others_own').hide(); //hide field on start
+	$('#ownership').change(function() {
+ 
+	 var $index = $('#ownership').index(this);
+ 
+	 if($('#ownership').val() == "Other") { //if this value is selected
+	 $('#others_own').show();
+	 } 
+	 else{
+	 $('#others_own').hide();
+	 }
+        });
+ });
+</script>
+
+<script>
+	$(document).ready(function() {
+	$('#others_cat').hide(); //hide field on start
+	$('#category').change(function() {
+ 
+	 var $index = $('#category').index(this);
+ 
+	 if($('#category').val() == "Other") { //if this value is selected
+	 $('#others_cat').show();
+	 } 
+	 else{
+	 $('#others_cat').hide();
+	 }
+        });
+ });
+</script>
+
+<script src="{% static 'app/dcalendar.picker.js' %}"></script>
+<script>
+$('#demo').dcalendarpicker({
+format:'yyyy-mm-dd'
+});
+
+</script>
+
+
+
+<script>
+function validateEmail(email) {
+  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+function validateForm() {
+  	var email = document.forms["myForm"]["email"].value;
+  	if (validateEmail(email) ) {
+  	}
+  	else {
+  		alert("Email must be valid");
+  		return false;
+  	}
+  	
+  	var letters = /^[A-Za-z ]+$/
+  	var auth_name = document.forms["myForm"]["auth_name"].value;
+  	if (auth_name.match(letters)) {
+	}
+	else {
+		alert("Authorised Person name must be valid");
+  		return false;
+  	}
+  	var bio_auth_name1 = document.forms["myForm"]["bio_auth_name1"].value;
+  	if (bio_auth_name1.match(letters)) {
+	}
+	else {
+		alert("Authorised Person Name 1 must be valid");
+  		return false;
+  	}
+  	var bio_auth_name2 = document.forms["myForm"]["bio_auth_name2"].value;
+  	if (bio_auth_name2.match(letters)) {
+	}
+	else {
+		alert("Authorised Person Name 2 must be valid");
+  		return false;
+  	}
+  	var sup_name1 = document.forms["myForm"]["sup_name1"].value;
+  	if (sup_name1.match(letters)) {
+	}
+	else {
+		alert("Supervisor Name 1 must be valid");
+  		return false;
+  	}
+  	var sup_name2 = document.forms["myForm"]["sup_name2"].value;
+  	if (sup_name2.match(letters)) {
+	}
+	else {
+		alert("Supervisor Name 2 must be valid");
+  		return false;
+  	}
+ 
+	
+}
+    
+</script>
+
+
+
+<script>
+
+    $('#myForm').submit(function(){
+      var email = $('#email').val();
+      if (email == ''){
+         alert('Please enter Email');
+         return false;
+      }
+
+      
+    })
+</script>
+  
+  
+  
+ 
+{% endblock %}
+
+
+
