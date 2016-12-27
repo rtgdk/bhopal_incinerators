@@ -14,7 +14,6 @@ url(r'^user/(?P<user_id>\w+)/$',views.user_page,name="user page"),
 #url(r'^email_validate/$', views.email_validate, name='email_validate'),
 url(r'^update/$', views.update , name = 'update'),
 url(r'^search/$', views.autocompleteModel , name = 'search'),
-url(r'^complain/$', views.complain , name = 'complain'),
 #url(r'^search2/$', views.autocompleteModel2 , name = 'search2'),
 ]
 

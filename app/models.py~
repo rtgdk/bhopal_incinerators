@@ -78,9 +78,11 @@ class Waste(models.Model):
 	date = models.DateField(blank=False)
 	hospital_code =  models.CharField(max_length=64)
 	key = models.CharField(max_length=64)
-	waste1 = models.IntegerField(blank=True,null=True,default=0)
-	waste2 = models.IntegerField(blank=True,null=True,default=0)
-	waste3 = models.IntegerField(blank=True,null=True,default=0)
+	name = models.CharField(max_length=64)
+	waste1 = models.IntegerField(blank=True,null=True,default=0)	#yellow
+	waste2 = models.IntegerField(blank=True,null=True,default=0)	#red 
+	waste3 = models.IntegerField(blank=True,null=True,default=0)	#white
+	waste4 = models.IntegerField(blank=True,null=True,default=0)	#blue
 	def __str__(self):
                 return (self.name+" " +str(self.date))
 	

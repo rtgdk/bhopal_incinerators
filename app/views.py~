@@ -15,6 +15,10 @@ from django.views.decorators.cache import cache_control
 #mail
 #from django.core.mail import EmailMultiAlternatives
 from django.core.mail import EmailMessage
+from django.core.mail import send_mail
+#excel
+import xlsxwriter
+
 from .models import SignUp,User,PrimaryAdmin,SecondaryAdmin,Waste
 def index(request):
 	context_dict={}
@@ -22,17 +26,18 @@ def index(request):
 	context_dict['b'] = b 
 	if request.method == 'POST':
 		if 'primaryadmin' in request.session:
-			name = request.POST['name']
-			
-			a= SignUp.objects.get(key=name)
-			Waste.objects.create( date = datetime.now().strftime("%Y-%m-%d") , hospital_code = a.id , key = a.key ,name = a.name, waste1 = request.POST['bag_1'] , waste2 = request.POST['bag_2'] ,waste3 = request.POST['bag_3'] ) 
-			#return HttpResponse("error")
+			try:
+				name = request.POST['name']
+				a= SignUp.objects.get(key=name)
+				Waste.objects.create( date = datetime.now().strftime("%Y-%m-%d") , hospital_code = a.id , key = a.key ,name = a.name, waste1 = request.POST['bag_1'] , waste2 = request.POST['bag_2'] ,waste3 = request.POST['bag_3'],waste4 = request.POST['bag_4'] ) 
+			except: 
+				return HttpResponse("error")
 			return render(request, 'app/index.html',context_dict)
 		elif 'secondaryadmin' in request.session:
 			try:
 				name = request.POST['name']
 				a= SignUp.objects.get(key=name)
-				Waste.objects.create(username = request.user , date = datetime.now , hospital_code = a.id , key = a.key ,name = a.name,waste1 = request.POST['bag1'] , waste2 = request.POST['bag2'] ,waste3 = request.POST['bag3'] )
+				Waste.objects.create( date = datetime.now().strftime("%Y-%m-%d") , hospital_code = a.id , key = a.key ,name = a.name, waste1 = request.POST['bag_1'] , waste2 = request.POST['bag_2'] ,waste3 = request.POST['bag_3'],waste4 = request.POST['bag_4'] ) 
 			except: 
 				return HttpResponse("error")
 			return render(request, 'app/index.html',context_dict)
@@ -162,8 +167,8 @@ def admin_login(request):
 					request.session['secondaryadmin']=user.username
 					return HttpResponseRedirect("/app/")
 				else :
-				context_dict["notlogin"]="Invalid Credentials"
-				return render(request, 'app/admin_login.html',context_dict)
+					context_dict["notlogin"]="Invalid Credentials"
+					return render(request, 'app/admin_login.html',context_dict)
 			except :
 				context_dict["notlogin"]="Invalid Credentials"
 				return render(request, 'app/admin_login.html',context_dict)
@@ -245,7 +250,7 @@ def user_page(request,user_id):
 
 
 
-def update(request):
+def update(request):  #i denotes whether submit button clicked or not, s denotes 1 for single day and 0 for multiple day
 	context_dict={}
 	
 	if request.method == 'POST':
@@ -264,14 +269,48 @@ def update(request):
 				a1=0
 				a2=0
 				a3=0
+				a4=0
+				b=[]
 				for k in waste :
 					a1=a1+k.waste1
 					a2=a2+k.waste2
 					a3=a3+k.waste3
+					a4=a4+k.waste4
+					b.append([str(k.date),str(k.name),str(k.waste1),str(k.waste2),str(k.waste3),str(k.waste4)]) #excel
+				print(b)	
 				total['a1']=a1
 				total['a2']=a2
 				total['a3']=a3
+				total['a4']=a4
 				context_dict['total']=total
+				#excel
+				workbook = xlsxwriter.Workbook('app/media/'+'All'+'_'+date+'_list.xlsx')
+				context_dict['link']='All'+'_'+date+'_list.xlsx'
+				worksheet = workbook.add_worksheet()
+				worksheet.set_column('A:A', 15)
+				worksheet.set_column('B:B', 25)
+				worksheet.set_column('C:C', 15)
+				worksheet.set_column('D:D', 15)
+				worksheet.set_column('E:E', 15)
+				worksheet.set_column('F:F', 15)
+				bold = workbook.add_format({'bold': 1})
+				worksheet.write('A1', 'Date', bold)
+				worksheet.write('B1', 'Name', bold)
+				worksheet.write('C1', 'Yellow Bag', bold)
+				worksheet.write('D1', 'Red Bag', bold)
+				worksheet.write('E1', 'White Bag', bold)
+				worksheet.write('F1', 'Blue Bag', bold)
+				row = 1
+				col = 0
+				for i in b:
+					worksheet.write_string  (row, col,i[0] )
+					worksheet.write_string(row, col + 1, i[1] )
+					worksheet.write_string  (row, col + 2,i[2] )
+					worksheet.write_string  (row, col+3,i[3] )
+					worksheet.write_string(row, col + 4, i[4] )
+					worksheet.write_string  (row, col + 5,i[5] )
+					row += 1
+				workbook.close()
 				return render(request, 'app/update.html',context_dict)
 			date= request.POST['demo1_1']
 			waste = Waste.objects.filter(key=name,date=date)
@@ -280,122 +319,192 @@ def update(request):
 			context_dict['i']=i
 			context_dict['s']=s
 			context_dict['waste']=waste
+			context_dict['date']=date
 			total={}
 			a1=0
 			a2=0
 			a3=0
+			a4=0
+			b=[]
 			for k in waste :
 				a1=a1+k.waste1
 				a2=a2+k.waste2
 				a3=a3+k.waste3
+				a4=a4+k.waste4
+				b.append([str(k.date),str(k.name),str(k.waste1),str(k.waste2),str(k.waste3),str(k.waste4)]) #excel
+			print(b)
 			total['a1']=a1
 			total['a2']=a2
 			total['a3']=a3
+			total['a4']=a4
 			context_dict['total']=total
+			#excel
+			workbook = xlsxwriter.Workbook('app/media/'+name+'_'+date+'_list.xlsx')
+			context_dict['link']= name+'_'+date+'_list.xlsx'
+			worksheet = workbook.add_worksheet()
+			worksheet.set_column('A:A', 15)
+			worksheet.set_column('B:B', 25)
+			worksheet.set_column('C:C', 15)
+			worksheet.set_column('D:D', 15)
+			worksheet.set_column('E:E', 15)
+			worksheet.set_column('F:F', 15)
+			bold = workbook.add_format({'bold': 1})
+			worksheet.write('A1', 'Date', bold)
+			worksheet.write('B1', 'Name', bold)
+			worksheet.write('C1', 'Yellow Bag', bold)
+			worksheet.write('D1', 'Red Bag', bold)
+			worksheet.write('E1', 'White Bag', bold)
+			worksheet.write('F1', 'Blue Bag', bold)
+			row = 1
+			col = 0
+			for i in b:
+				worksheet.write_string  (row, col,i[0] )
+				worksheet.write_string(row, col + 1, i[1] )
+				worksheet.write_string  (row, col + 2,i[2] )
+				worksheet.write_string  (row, col+3,i[3] )
+				worksheet.write_string(row, col + 4, i[4] )
+				worksheet.write_string  (row, col + 5,i[5] )
+				row += 1
+			workbook.close()
 			return render(request, 'app/update.html',context_dict)
 		if 'form2' in request.POST:
 			total={}
-			total2={}
 			name= request.POST['name2']
 			if name=="":
 				from_date= request.POST['demo1_2']
 				to_date= request.POST['demo2_2']
+				context_dict['fdate']=from_date
+				context_dict['tdate']=to_date
 				waste = Waste.objects.filter(date__range=[from_date, to_date])
-				uni_waste = Waste.objects.filter(date__range=[from_date, to_date]).values_list('name', flat=True).distinct()
-			
-				for i in uni_waste:
-					x={}
-					x['name']=i
-					b1=0
-					b2=0
-					b3=0
-					for j in waste:
-						if (j.name==i):
-							b1=b1+j.waste1
-							b2=b2+j.waste2
-							b3=b3+j.waste3
-						
-					x['b1']=b1
-					x['b2']=b2
-					x['b3']=b3
-					total2[i]=x
-				context_dict['total2']=total2
 				i=1
 				s=0
 				context_dict['i']=i
 				context_dict['s']=s
 				context_dict['waste']=waste
-			
 				a1=0
 				a2=0
 				a3=0
+				a4=0
+				b=[]
 				for k in waste :
 					a1=a1+k.waste1
 					a2=a2+k.waste2
 					a3=a3+k.waste3
+					a4=a4+k.waste4
+					b.append([str(k.date),str(k.name),str(k.waste1),str(k.waste2),str(k.waste3),str(k.waste4)])
+				print(b)
 				total['a1']=a1
 				total['a2']=a2
 				total['a3']=a3
+				total['a4']=a4
 				context_dict['total']=total
+				#excel
+				workbook = xlsxwriter.Workbook('app/media/'+'All'+'_'+from_date+'to'+to_date+'_list.xlsx')
+				context_dict['link']= 'All'+'_'+from_date+'to'+to_date+'_list.xlsx'
+				worksheet = workbook.add_worksheet()
+				worksheet.set_column('A:A', 15)
+				worksheet.set_column('B:B', 25)
+				worksheet.set_column('C:C', 15)
+				worksheet.set_column('D:D', 15)
+				worksheet.set_column('E:E', 15)
+				worksheet.set_column('F:F', 15)
+				bold = workbook.add_format({'bold': 1})
+				worksheet.write('A1', 'Date', bold)
+				worksheet.write('B1', 'Name', bold)
+				worksheet.write('C1', 'Yellow Bag', bold)
+				worksheet.write('D1', 'Red Bag', bold)
+				worksheet.write('E1', 'White Bag', bold)
+				worksheet.write('F1', 'Blue Bag', bold)
+				row = 1
+				col = 0
+				for i in b:
+					worksheet.write_string  (row, col,i[0] )
+					worksheet.write_string(row, col + 1, i[1] )
+					worksheet.write_string  (row, col + 2,i[2] )
+					worksheet.write_string  (row, col+3,i[3] )
+					worksheet.write_string(row, col + 4, i[4] )
+					worksheet.write_string  (row, col + 5,i[5] )
+					row += 1
+				workbook.close()
 				return render(request, 'app/update.html',context_dict)
 			from_date= request.POST['demo1_2']
 			to_date= request.POST['demo2_2']
 			waste = Waste.objects.filter(key=name,date__range=[from_date, to_date])
-			uni_waste = Waste.objects.filter(key=name,date__range=[from_date, to_date]).values_list('name', flat=True).distinct()
-			
-			for i in uni_waste:
-				x={}
-				x['name']=i
-				b1=0
-				b2=0
-				b3=0
-				for j in waste:
-					if (j.name==i):
-						b1=b1+j.waste1
-						b2=b2+j.waste2
-						b3=b3+j.waste3
-						
-				x['b1']=b1
-				x['b2']=b2
-				x['b3']=b3
-				total2[i]=x
-			context_dict['total2']=total2
 			i=1
 			s=0
 			context_dict['i']=i
 			context_dict['s']=s
+			context_dict['fdate']=from_date
+			context_dict['tdate']=to_date
 			context_dict['waste']=waste
-			
 			a1=0
 			a2=0
 			a3=0
+			a4=0
+			b=[]
 			for k in waste :
 				a1=a1+k.waste1
 				a2=a2+k.waste2
 				a3=a3+k.waste3
+				a4=a4+k.waste4
+				b.append([str(k.date),str(k.name),str(k.waste1),str(k.waste2),str(k.waste3),str(k.waste4)])
+			print(b)
 			total['a1']=a1
 			total['a2']=a2
 			total['a3']=a3
+			total['a4']=a4
 			context_dict['total']=total
+			#excel
+			workbook = xlsxwriter.Workbook('app/media/'+name+'_'+from_date+'to'+to_date+'_list.xlsx')
+			context_dict['link']= name+'_'+from_date+'to'+to_date+'_list.xlsx'
+			worksheet = workbook.add_worksheet()
+			worksheet.set_column('A:A', 15)
+			worksheet.set_column('B:B', 25)
+			worksheet.set_column('C:C', 15)
+			worksheet.set_column('D:D', 15)
+			worksheet.set_column('E:E', 15)
+			worksheet.set_column('F:F', 15)
+			bold = workbook.add_format({'bold': 1})
+			worksheet.write('A1', 'Date', bold)
+			worksheet.write('B1', 'Name', bold)
+			worksheet.write('C1', 'Yellow Bag', bold)
+			worksheet.write('D1', 'Red Bag', bold)
+			worksheet.write('E1', 'White Bag', bold)
+			worksheet.write('F1', 'Blue Bag', bold)
+			row = 1
+			col = 0
+			for i in b:
+				worksheet.write_string  (row, col,i[0] )
+				worksheet.write_string(row, col + 1, i[1] )
+				worksheet.write_string  (row, col + 2,i[2] )
+				worksheet.write_string  (row, col+3,i[3] )
+				worksheet.write_string(row, col + 4, i[4] )
+				worksheet.write_string  (row, col + 5,i[5] )
+				row += 1
+			workbook.close()
 			return render(request, 'app/update.html',context_dict)
+					
+		
 		if 'form3' in request.POST:
 			date=request.POST['date']
 			name=request.POST['name']
 			waste1=request.POST['bag_1']
 			waste2=request.POST['bag_2']
 			waste3=request.POST['bag_3']
+			waste4=request.POST['bag_4']
 			a = Waste.objects.get(date=date,name=name)
 			a.waste1=waste1
 			a.waste2=waste2
 			a.waste3=waste3
+			a.waste4=waste4
 			a.save()
 			return render(request, 'app/update.html',context_dict)
 		if 'form4' in request.POST:
 			username=request.session['user']
 			a=User.objects.get(username=username)
-			b=SignUp.objects.get(email=a.email)
+			c=SignUp.objects.get(email=a.email)
 			date= request.POST['demo1_1']
-			waste = Waste.objects.filter(name=b.name,date=date)
+			waste = Waste.objects.filter(name=c.name,date=date)
 			i=1
 			s=1
 			context_dict['i']=i
@@ -405,69 +514,120 @@ def update(request):
 			a1=0
 			a2=0
 			a3=0
+			a4=0
+			b=[]
 			for k in waste :
 				a1=a1+k.waste1
 				a2=a2+k.waste2
 				a3=a3+k.waste3
+				a4=a4+k.waste4
+				b.append([str(k.date),str(k.name),str(k.waste1),str(k.waste2),str(k.waste3),str(k.waste4)])
+			print(b)
 			total['a1']=a1
 			total['a2']=a2
 			total['a3']=a3
+			total['a4']=a4
 			context_dict['total']=total
+			#excel
+			workbook = xlsxwriter.Workbook('app/media/'+c.name+'_'+date+'_list.xlsx')
+			context_dict['link']= c.name+'_'+date+'_list.xlsx'
+			worksheet = workbook.add_worksheet()
+			worksheet.set_column('A:A', 15)
+			worksheet.set_column('B:B', 25)
+			worksheet.set_column('C:C', 15)
+			worksheet.set_column('D:D', 15)
+			worksheet.set_column('E:E', 15)
+			worksheet.set_column('F:F', 15)
+			bold = workbook.add_format({'bold': 1})
+			worksheet.write('A1', 'Date', bold)
+			worksheet.write('B1', 'Name', bold)
+			worksheet.write('C1', 'Yellow Bag', bold)
+			worksheet.write('D1', 'Red Bag', bold)
+			worksheet.write('E1', 'White Bag', bold)
+			worksheet.write('F1', 'Blue Bag', bold)
+			row = 1
+			col = 0
+			for i in b:
+				worksheet.write_string  (row, col,i[0] )
+				worksheet.write_string(row, col + 1, i[1] )
+				worksheet.write_string  (row, col + 2,i[2] )
+				worksheet.write_string  (row, col+3,i[3] )
+				worksheet.write_string(row, col + 4, i[4] )
+				worksheet.write_string  (row, col + 5,i[5] )
+				row += 1
+			workbook.close()
 			return render(request, 'app/update.html',context_dict)
 		if 'form5' in request.POST:
 			total={}
-			total2={}
 			username=request.session['user']
 			a=User.objects.get(username=username)
-			b=SignUp.objects.get(email=a.email)
+			c=SignUp.objects.get(email=a.email)
 			from_date= request.POST['demo1_2']
 			to_date= request.POST['demo2_2']
-			waste = Waste.objects.filter(name=b.name,date__range=[from_date, to_date])
-			uni_waste = Waste.objects.filter(name=b.name,date__range=[from_date, to_date]).values_list('name', flat=True).distinct()
-			
-			for i in uni_waste:
-				x={}
-				x['name']=i
-				b1=0
-				b2=0
-				b3=0
-				for j in waste:
-					if (j.name==i):
-						b1=b1+j.waste1
-						b2=b2+j.waste2
-						b3=b3+j.waste3
-						
-				x['b1']=b1
-				x['b2']=b2
-				x['b3']=b3
-				total2[i]=x
-			context_dict['total2']=total2
+			waste = Waste.objects.filter(name=c.name,date__range=[from_date, to_date])
 			i=1
 			s=0
 			context_dict['i']=i
 			context_dict['s']=s
 			context_dict['waste']=waste
-			
 			a1=0
 			a2=0
 			a3=0
+			a4=0
+			b=[]
 			for k in waste :
 				a1=a1+k.waste1
 				a2=a2+k.waste2
 				a3=a3+k.waste3
+				a4=a4+k.waste4
+				b.append([str(k.date),str(k.name),str(k.waste1),str(k.waste2),str(k.waste3),str(k.waste4)])
+			print(b)
 			total['a1']=a1
 			total['a2']=a2
 			total['a3']=a3
+			total['a4']=a4
 			context_dict['total']=total
+			#excel
+			workbook = xlsxwriter.Workbook('app/media/'+c.name+'_'+from_date+'to'+to_date+'_list.xlsx')
+			context_dict['link']= c.name+'_'+from_date+'to'+to_date+'_list.xlsx'
+			worksheet = workbook.add_worksheet()
+			worksheet.set_column('A:A', 15)
+			worksheet.set_column('B:B', 25)
+			worksheet.set_column('C:C', 15)
+			worksheet.set_column('D:D', 15)
+			worksheet.set_column('E:E', 15)
+			worksheet.set_column('F:F', 15)
+			bold = workbook.add_format({'bold': 1})
+			worksheet.write('A1', 'Date', bold)
+			worksheet.write('B1', 'Name', bold)
+			worksheet.write('C1', 'Yellow Bag', bold)
+			worksheet.write('D1', 'Red Bag', bold)
+			worksheet.write('E1', 'White Bag', bold)
+			worksheet.write('F1', 'Blue Bag', bold)
+			row = 1
+			col = 0
+			for i in b:
+				worksheet.write_string  (row, col,i[0] )
+				worksheet.write_string(row, col + 1, i[1] )
+				worksheet.write_string  (row, col + 2,i[2] )
+				worksheet.write_string  (row, col+3,i[3] )
+				worksheet.write_string(row, col + 4, i[4] )
+				worksheet.write_string  (row, col + 5,i[5] )
+				row += 1
+			workbook.close()
 			return render(request, 'app/update.html',context_dict)
-			return HttpResponseRedirect("/app/update/")
 	else :
 		i=0
 		context_dict['i']=i
 		return render(request, 'app/update.html',context_dict)
 	
 	
-	
+def complain(request):
+	subject = request.session['user']+" : "+request.POST['subject']
+	body= request.POST['complain']
+	send_mail(subject,body,'ssms7907@gmail.com',['rohit.lodhartg@gmail.com'],fail_silently=False,)
+	return render(request, 'app/complain.html')
+
 	
 	
 	
@@ -497,7 +657,7 @@ def email_validate(request):
 import json
 def autocompleteModel(request):
     if 'term' in request.GET:
-        tags = SignUp.objects.filter(status="approved",key__contains=request.GET['term']).values_list('key',flat=True)[:10]
+        tags = SignUp.objects.filter(status="approved",key__icontains=request.GET['term']).values_list('key',flat=True)[:10]
         
         return HttpResponse( json.dumps( [ tag for tag in tags ] ) )
     return HttpResponse()
@@ -509,4 +669,7 @@ def autocompleteModel2(request):
         tags = SignUp.objects.filter(status="approved",id__istartswith=request.GET['term']).values_list('id', flat=True).distinct()[:10]
         return HttpResponse( json.dumps( [ tag for tag in tags ] ) )
     return HttpResponse()"""
+    
+    
+ 
 
