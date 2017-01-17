@@ -18,6 +18,9 @@ from django.core.mail import EmailMessage
 from django.core.mail import send_mail
 #excel
 import xlsxwriter
+import django_excel as excel
+#excel date
+import re
 
 from .models import SignUp,User,PrimaryAdmin,SecondaryAdmin,Waste
 def index(request):
@@ -662,14 +665,47 @@ def autocompleteModel(request):
         return HttpResponse( json.dumps( [ tag for tag in tags ] ) )
     return HttpResponse()
 
-
-"""
-def autocompleteModel2(request):
-    if 'term' in request.GET:
-        tags = SignUp.objects.filter(status="approved",id__istartswith=request.GET['term']).values_list('id', flat=True).distinct()[:10]
-        return HttpResponse( json.dumps( [ tag for tag in tags ] ) )
-    return HttpResponse()"""
-    
-    
- 
+def upload(request):
+	context_dict={}
+	if request.method == "POST":
+		key = request.POST['name']
+		a= SignUp.objects.get(key=key)
+		hkey = a.key
+		hcode = a.id
+		hname = a.name
+		
+		def choice_func(row):
+			b = row[0]
+			print (str(b))
+			if re.match('\d\d\d\d-\d\d\-\d\d', str(b)):
+				print("date found")
+			else :
+				print("not date...skipping")
+				return None
+			try :
+				c = Waste.objects.filter(key=hkey,date=b)
+				if (len(c)>0):
+					c.delete()
+					print("deleting")
+				else :
+					pass
+			except :
+				print("continuing")
+				pass	
+			print(len(row))
+			row[5]=hkey
+			row[6]=hcode
+			row[7]=hname
+			print("adding")
+			return row
+		request.FILES['file'].save_to_database(
+		model=Waste,
+		initializer=choice_func,
+		mapdict=['date','waste1','waste2','waste3','waste4','key','hospital_code','name']
+		)
+		msg="Data updated for "+ str(hname)
+		context_dict['invalid']=msg
+		return render(request, 'app/upload_excel.html',context_dict)
+	else : 
+		return render(request, 'app/upload_excel.html',context_dict)
 

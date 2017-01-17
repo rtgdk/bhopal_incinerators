@@ -459,35 +459,30 @@ input[type=search] {
 {% endifequal %}
 {% ifequal s 0 %}
 <h4 class="text-center">{{fdate}}------{{tdate}}</h4>
-
-				<table class="table" id="team-list">
+				<table class="table" id="team">
 				<thead>
 				<tr>
-				<th>S.no</th>
-				<th>Date</th>
+				<th style="text-align:center;">S.no</th>
 				<th style="text-align:center;">Establishment Name</th>
 				<th style="text-align:center;">Yellow</th>
 				<th style="text-align:center;">Red</th>
 				<th style="text-align:center;">White</th>
 				<th style="text-align:center;">Blue</th>
 				</tr>
-				
 				</thead>
 				<tbody>
-				{% for i in waste %}
+				{% for l,k in total2.items %}
 				<tr>
 				<td></td>
-				<td>{{i.date}}</td>
-				<td>{{i.name}}</td>
-				<td>{{i.waste1}}</td>
-				<td>{{i.waste2}}</td>
-				<td>{{i.waste3}}</td>
-				<td>{{i.waste4}}</td>
+				<td>{{l}}</td>
+				<td>{{k.b1}}</td>
+				<td>{{k.b2}}</td>
+				<td>{{k.b3}}</td>
+				<td>{{k.b4}}</td>
 				</tr>
 				{% endfor %}
 				<tr>
 				<td>Total</td>
-				<td></td>
 				<td></td>
 				<td>{{total.a1}}</td>
 				<td>{{total.a2}}</td>
