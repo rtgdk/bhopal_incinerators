@@ -9,4 +9,4 @@
 5. `python manage.py migrate`
 6. `python manage.py createsuperuser`
 7. `python manage.py runserver`
-8. Head over to 127.0.0.1:8000 or localhost:8000
+8. head over to 127.0.0.1:8000 or localhost:8000
